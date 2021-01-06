@@ -1,0 +1,147 @@
+% !TEX option = --shell-escape
+% !TEX program = xelatex
+\documentclass[fontset=macnew]{ctexbook}
+
+% \setmainfont{Linux Libertine O}
+% \setsansfont{Linux Biolinum O}
+
+\usepackage{ragged2e}
+\usepackage[svgnames]{xcolor}
+\usepackage{pgfornament-han}
+\usetikzlibrary{chains}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations}
+\usetikzlibrary{decorations.text,decorations.markings}
+
+\usepackage{cncolours}
+
+\usepackage{geometry}
+\geometry{hmargin=1in,vmargin=0.8in,headheight=10pt}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,raster}
+
+
+%%%%%% 这段代码可以忽视，只是 --shell-escape 时调用 minted 不然就用 listings
+\ifnum\shellescape=1
+  \tcbuselibrary{minted}
+  \setminted{breaksymbolleft={},breakindent=\ccwd}
+  \newminted{latex}{}
+  \newmintinline{latex}{}
+\else
+  \tcbuselibrary{listings}
+  \newcommand{\latexinline}[1]{\lstinline|#1|}
+  \lstnewenvironment{latexcode}{\lstset{language={[LaTeX]TeX}}}{}
+  \lstset{basicstyle=\ttfamily}
+\fi
+%%%%%%%%
+
+
+\tcbset{fonttitle=\kaishu\large\bfseries,colback=铅白!60!white,colbacktitle=绀青,coltitle=精白,colframe=墨灰}
+
+\makeatletter
+\newcommand{\getpgfornamenthanDim}[1]{%
+ {\@pgfornamenthanDim{#1}宽：\@pgfornamentX\\高：\@pgfornamentY}%
+}
+\makeatother
+
+\usepackage{fancyhdr}
+\fancyhf{}
+\renewcommand{\headrule}{}
+
+\fancyhead[L]{%
+\newbox{\fortyseven}
+\savebox{\fortyseven}{\pgfornamenthan[scale=0.2,color=鸭卵青]{47}}
+\tikzset{every node/.append style={inner sep=0pt,鸭卵青}}
+\begin{tikzpicture}[overlay,remember picture]
+\node[anchor=north west,shift={(14.5pt,-14.5pt)}] at (current page.north west)
+  (nw) {\pgfornamenthan[scale=0.2]{25}};
+\node[anchor=north east,shift={(-14.5pt,-14.5pt)}] at (current page.north east)
+  (ne) {\pgfornamenthan[scale=0.2,symmetry=v]{25}};
+\node[anchor=south west,shift={(14.5pt,14.5pt)}] at (current page.south west)
+  (sw) {\pgfornamenthan[scale=0.2,symmetry=h]{25}};
+\node[anchor=south east,shift={(-14.5pt,14.5pt)}] at (current page.south east)
+  (se) {\pgfornamenthan[scale=0.2,symmetry=c]{25}};
+%
+\begin{scope}[start chain,node distance=0pt]
+\node[anchor=north west,on chain] at (nw.north east) {\usebox{\fortyseven}};
+\foreach \i in {1,...,15} {
+  \node[shift={($(\i*31.5bp,0.63)$)}]{\usebox{\fortyseven}};%顶部
+}
+\end{scope}
+%
+\begin{scope}[start chain,node distance=0pt]
+\node[anchor=south west,on chain] at (sw.south east) {\usebox{\fortyseven}};%左下第一个
+\foreach \i in {1,...,7} \node[shift={($(\i*30bp,-25.8)$)}]{\usebox{\fortyseven}};%左下
+\end{scope}
+%
+\begin{scope}[start chain=going left,node distance=0pt]
+%\node[anchor=south east,shift={($(8*30+230bp,0)$)}] at (se.south west) {\usebox{\fortyseven}};%右下第一个（反向）
+\foreach \i in {1,...,8} \node[shift={($(\i*30+233bp,-25.8)$)}]{\usebox{\fortyseven}};%右下
+\end{scope}
+%
+% 垂直的话 chains 比较不好控制，我懒得折腾了，直接用 \foreach。
+% 自己算一下， (47) 长度 155. 那么 scale = 0.2 的话……
+\foreach \i in {0,...,22}
+  \node[anchor=south west,rotate=-90,shift={($(\i*29.8-1bp,0)$)}] at (nw.south west)
+    {\usebox{\fortyseven}};
+%
+\foreach \i in {0,...,22}
+  \node[anchor=south east,rotate=90,shift={($(-\i*29.8+4bp,0)$)}] at (ne.south east)
+    {\usebox{\fortyseven}};
+%
+%% 严格来说应该放在 \fancyfoot 吧，算了一样啦
+\node[yshift=32pt,铜绿] at (current page.south) {\pgfornamenthan[scale=0.1]{51}};
+\node[yshift=32pt,text=铜绿] at (current page.south) {\large\thepage};
+%
+\end{tikzpicture}
+}
+
+\pagestyle{fancy}
+\fancypagestyle{plain}{\pagestyle{fancy}}
+
+\usepackage[colorlinks]{hyperref}
+
+ \ctexset {
+    part/pagestyle = fancy,
+    chapter = {
+      format    = \raggedright,
+      pagestyle = empty,
+    },
+section = {
+name = {第,节},
+number = \chinese{section},
+} }
+
+\begin{document}
+\pagestyle{empty}
+\frontmatter
+%封面
+\centering
+\begin{tikzpicture}[x=1pt,y=1pt]
+\tikzset{every node/.append style={inner sep=0pt,color= 茜色}} \node (nw) {\pgfornamenthan[scale=0.35]{66}}; \node[anchor=north west,right=140bp of nw] (ne)
+{\pgfornamenthan[symmetry=v,scale=0.35]{66}}; \node[anchor=north west,below=0pt of nw] (sw)
+{\pgfornamenthan[symmetry=h,scale=0.35]{66}}; \node[anchor=north east,below=0pt of ne] (se)
+{\pgfornamenthan[symmetry=c,scale=0.35]{66}};
+%% 用 pgfornmanet 自带的 \draw (A) to[ornamenthan=19] (B) 机制的话会导致线条高度跟着变化! 只好折衷用 tikz 的 xscale 来实现加长了。\pgfornamenthan 本身的 scale 则要确保和角点的 scale 一致。
+\node[anchor=south west,xscale=2] at (sw.south east) {\pgfornamenthan[scale=0.35]{30}};
+%% 另外一种方法是用 decorations，同样需要注意一下各种长度参数 
+\begin{scope}[decoration={markings,
+mark=between positions 0 and 0.75 step 70bp with
+{ \node[transform shape,anchor=north west]{\pgfornamenthan[scale=0.35]{30}};}
+}]
+\draw[decorate] (nw.north east) -- (ne.north west); \end{scope}
+\node[font=\kaishu,align=center,xshift=70,text=black] at (nw.south east) {\Huge 英语语法};
+\end{tikzpicture}
+\newpage
+\pagestyle{fancy}
+\setcounter{page}{0}
+\centering
+\begin{tikzpicture}\tikzset{every node/.append style={赤金,inner sep=0pt}}
+\node (nw) {\pgfornamenthan[scale=0.5]{60}}; %内衬页
+\end{tikzpicture}
+\tableofcontents
+\newpage
+\mainmatter
+\part{语法骨架}
+\end{document}
